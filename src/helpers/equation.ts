@@ -1,23 +1,25 @@
 import { Equation } from '../models'
+const sha256 = require('sha256')
 
-var multi:string[][]  = [
-    ['Enter the last 4 digits of the submitted cl number of http://cl/12345678. Please note the given cl number is OCL. You have to open critique to see the submitted cl number.', '4054'],
-    ['Enter the last 4 digits of the submitted cl number of http://cl/98765432. Please note the given cl number is OCL. You have to open critique to see the submitted cl number.', '8179'],
-    ['Enter the last 4 digits of the submitted cl number of http://cl/246810. Please note the given cl number is OCL. You have to open critique to see the submitted cl number.', '7039'],
-    ['Enter the last 4 digits of the submitted cl number of http://cl/23456789. Please note the given cl number is OCL. You have to open critique to see the submitted cl number.', '1817'],
-    ['Enter the last 4 digits of the submitted cl number of http://cl/45678911. Please note the given cl number is OCL. You have to open critique to see the submitted cl number.', '1546'],
-    ['Enter the last 4 digits of the submitted cl number of http://cl/357913. Please note the given cl number is OCL. You have to open critique to see the submitted cl number.', '7915'],
-    ['Enter the last 4 digits of the submitted cl number of http://cl/6543210. Please note the given cl number is OCL. You have to open critique to see the submitted cl number.', '9450'],
-];
+const secret = process.env.G_TG_VERIFY_SECRET;
 
 export function generateEquation() {
-  const a = getRandomInt()
+  const code = getRandomInt()
+  const question = `Go to go/tg-verify?${code} and enter the value here.`
+  const timestamp = Math.floor((new Date()).getTime() / 1000 / 30)
+
+  const answers = []
+  // Allow 2-minute tolerance to obtain code
+  for (let t = 0; t < 5; t++) {
+    const calculated = sha256(secret + (timestamp + t) + code + secret).substring(0, 4)
+    answers.push(calculated)
+  }
   return {
-    question: multi[a][0],
-    answer: multi[a][1],
+    question,
+    answers,
   } as Equation
 }
 
 function getRandomInt() {
-  return Math.floor(Math.random() * Math.floor(multi.length - 1))
+  return Math.floor(Math.random() * 10000)
 }

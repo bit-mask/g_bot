@@ -79,8 +79,8 @@ export function setupNewcomers(bot: Telegraf<ContextMessageUpdate>) {
     // Check if it is digits captcha
     if (candidate.captchaType === CaptchaType.DIGITS) {
       // Check the format
-      const hasCorrectAnswer = ctx.message.text.includes(
-        candidate.equation.answer as string
+      const hasCorrectAnswer = candidate.equation.answers.some(
+        (answer) => ctx.message.text.toLowerCase().includes(answer as string)
       )
       if (!hasCorrectAnswer) {
         if (ctx.dbchat.strict) {

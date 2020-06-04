@@ -36,7 +36,7 @@ export enum CaptchaType {
 
 export class Equation {
   question: String
-  answer: String
+  answers: String[]
 }
 
 export class Candidate {
