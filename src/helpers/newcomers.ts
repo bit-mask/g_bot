@@ -330,7 +330,7 @@ async function kickCandidates(
     } catch (err) {
       await report(err, 'deleteMessage')
     }
-    printUserOnKicked(bot.telegram, chat, getUsername(candidate, true))
+    printUserOnKicked(bot.telegram, chat, candidate.username)
   }
   // Remove from candidates
   await modifyCandidates(chat, false, candidates)
@@ -415,7 +415,7 @@ function getCandidate(
     entryChatId: ctx.chat.id,
     entryMessageId: ctx.message.message_id,
     imageText: image ? image.text : undefined,
-    username: user.username,
+    username: cloneDeep(user.username),
   }
 }
 
