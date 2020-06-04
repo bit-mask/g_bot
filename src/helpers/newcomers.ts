@@ -415,7 +415,7 @@ function getCandidate(
     entryChatId: ctx.chat.id,
     entryMessageId: ctx.message.message_id,
     imageText: image ? image.text : undefined,
-    username: user.username,
+    username: cloneDeep(user.username),
   }
 }
 
