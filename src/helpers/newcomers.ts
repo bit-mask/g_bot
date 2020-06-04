@@ -13,6 +13,7 @@ import { bot } from './bot'
 import { User, Message } from 'telegram-typings'
 import { report } from './report'
 import { ExtraReplyMessage } from 'telegraf/typings/telegram-types'
+import { Telegram } from 'telegraf/typings/telegram'
 import { generateEquation } from './equation'
 import { checkCAS } from './cas'
 import { getImageCaptcha } from './captcha'
@@ -247,7 +248,6 @@ async function onNewChatMembers(ctx: ContextMessageUpdate) {
           }
         }
         await kickChatMember(ctx.dbchat, member)
-        printUserOnKicked(ctx)
         continue
       }
       // Check if already a candidate
@@ -329,6 +329,7 @@ async function kickCandidates(
     } catch (err) {
       await report(err, 'deleteMessage')
     }
+    printUserOnKicked(bot.telegram, chat, candidate.username)
   }
   // Remove from candidates
   await modifyCandidates(chat, false, candidates)
@@ -649,19 +650,19 @@ async function greetUser(ctx: ContextMessageUpdate) {
   }
 }
 
-async function printToDialogue(ctx: ContextMessageUpdate, msg_text: string) {
-  const message = cloneDeep(ctx.dbchat.greetingMessage.message)
+async function printToDialogue(telegram: Telegram, dbchat: Chat, msg_text: string) {
+  const message = cloneDeep(dbchat.greetingMessage.message)
   message.text = msg_text;
   // Send the message
   let messageSent: Message
   try {
-    messageSent = await ctx.telegram.sendCopy(
-      ctx.dbchat.id,
+    messageSent = await telegram.sendCopy(
+      dbchat.id,
       message,
-      ctx.dbchat.greetingButtons
+      dbchat.greetingButtons
         ? Extra.webPreview(false).markup((m) =>
             m.inlineKeyboard(
-              ctx.dbchat.greetingButtons
+              dbchat.greetingButtons
                 .split('\n')
                 .map((s) => {
                   const components = s.split(' - ')
@@ -674,13 +675,13 @@ async function printToDialogue(ctx: ContextMessageUpdate, msg_text: string) {
     )
   } catch (err) {
     message.entities = []
-    messageSent = await ctx.telegram.sendCopy(
-      ctx.dbchat.id,
+    messageSent = await telegram.sendCopy(
+      dbchat.id,
       message,
-      ctx.dbchat.greetingButtons
+      dbchat.greetingButtons
         ? Extra.webPreview(false).markup((m) =>
             m.inlineKeyboard(
-              ctx.dbchat.greetingButtons
+              dbchat.greetingButtons
                 .split('\n')
                 .map((s) => {
                   const components = s.split(' - ')
@@ -696,17 +697,17 @@ async function printToDialogue(ctx: ContextMessageUpdate, msg_text: string) {
 
 async function printUserFailedAttempt(ctx: ContextMessageUpdate) {
   let text = "Warning: invalid verfication code detected. username: "+ getUsername(ctx.from)+", fullname: "+ getName(ctx.from) + ".";
-  printToDialogue(ctx, text);
+  printToDialogue(ctx.telegram, ctx.dbchat, text);
 }
 
 async function printUserAddedOnSuccess(ctx: ContextMessageUpdate) {
   let text = "System log: " + getUsername(ctx.from)+" passed the verfication. Welcome!";
-  printToDialogue(ctx, text);
+  printToDialogue(ctx.telegram, ctx.dbchat, text);
 }
 
-async function printUserOnKicked(ctx: ContextMessageUpdate) {
-  let text = "System log: " + getUsername(ctx.from)+" was kicked out.";
-  printToDialogue(ctx, text);
+async function printUserOnKicked(telegram: Telegram, Chat dbchat, string: username) {
+  let text = "System log: " + username +" was kicked out.";
+  printToDialogue(telegram, dbchat, text);
 }
 
 // Check if needs to ban
