@@ -13,7 +13,8 @@ import { bot } from './bot'
 import { User, Message } from 'telegram-typings'
 import { report } from './report'
 import { ExtraReplyMessage } from 'telegraf/typings/telegram-types'
-import { Telegram } from 'telegraf/typings/telegram'
+//import { Telegram } from 'telegraf/typings/telegram'
+import { Telegram } from 'telegraf'
 import { generateEquation } from './equation'
 import { checkCAS } from './cas'
 import { getImageCaptcha } from './captcha'
@@ -705,7 +706,7 @@ async function printUserAddedOnSuccess(ctx: ContextMessageUpdate) {
   printToDialogue(ctx.telegram, ctx.dbchat, text);
 }
 
-async function printUserOnKicked(telegram: Telegram, Chat dbchat, string: username) {
+async function printUserOnKicked(telegram: Telegram, dbchat: Chat, username: string) {
   let text = "System log: " + username +" was kicked out.";
   printToDialogue(telegram, dbchat, text);
 }

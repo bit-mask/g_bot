@@ -1,5 +1,6 @@
 import { Chat } from '../models'
 import * as tt from '../../node_modules/telegraf/typings/telegram-types.d'
+import { Telegram } from '../../node_modules/telegraf/typings/telegram.d'
 import { InstanceType } from 'typegoose'
 
 declare module 'telegraf' {
