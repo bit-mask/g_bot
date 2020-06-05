@@ -310,6 +310,7 @@ async function kickCandidates(
   // Loop through candidates
   for (const candidate of candidates) {
     // Try kicking the candidate
+    let username = cloneDeep(candidate.username)
     try {
       addKickedUser(chat, candidate.id)
       kickChatMemberProxy(
@@ -330,7 +331,7 @@ async function kickCandidates(
     } catch (err) {
       await report(err, 'deleteMessage')
     }
-    printUserOnKicked(bot.telegram, chat, candidate.username)
+    printUserOnKicked(bot.telegram, chat, username)
   }
   // Remove from candidates
   await modifyCandidates(chat, false, candidates)
@@ -415,7 +416,7 @@ function getCandidate(
     entryChatId: ctx.chat.id,
     entryMessageId: ctx.message.message_id,
     imageText: image ? image.text : undefined,
-    username: cloneDeep(user.username),
+    username: user.username,
   }
 }
 
