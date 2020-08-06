@@ -4,7 +4,7 @@ const sha256 = require('sha256')
 const secret = process.env.G_TG_VERIFY_SECRET;
 
 export function generateEquation() {
-  const code = getRandomInt()
+  const code = `q=${getRandomInt()}`
   const question = `Go to go/tg-verify?${code} and enter the value here.`
   const timestamp = Math.floor((new Date()).getTime() / 1000 / 30)
 
